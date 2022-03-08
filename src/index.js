@@ -3,6 +3,7 @@ const PORT = process.env.PORT || 3000;
 const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
 const bodyParser = require('body-parser');
+const path = require('path')
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,9 +13,9 @@ var db = new JsonDB(new Config("chat", true, false, '/'));
 db.push("/messages", []);
 db.save();
 
-app.get('/', (req, res) => {
-  res.json({hello: "world"})
-})
+app.use('/', express.static(path.join(__dirname, 'public')))
+
+
 app.get('/messages', (req, res) => {
   var data = db.getData("/messages");
   res.json(data)

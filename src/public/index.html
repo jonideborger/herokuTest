@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Chat app</title>
+  <link href="./skeleton.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="container">
+    <div>
+      <h2>[GET] all messages</h2>
+      <p>Get a list of all available messages</p>
+      url:
+      <pre>https://ehbchatapp.herokuapp.com/messages</pre>
+    </div>
+    <div>
+      <h2>[POST] a new message</h2>
+      <p>Add a new message</p>
+      url:
+      <pre>https://ehbchatapp.herokuapp.com/message</pre>
+      body:
+      <pre>{ author: [author name], message: [message]}</pre>
+    </div>
+    <div>
+      <h2>[PATCH] a message</h2>
+      <p>Update a message</p>
+      url:
+      <pre>https://ehbchatapp.herokuapp.com/message/[id]</pre>
+      body:
+      <pre>{ author: [author name], message: [message]}</pre>
+    </div>
+    <div>
+      <h2>[DELETE] a message</h2>
+      <p>Delete a message</p>
+      url:
+      <pre>https://ehbchatapp.herokuapp.com/message/[id]</pre>
+    </div>
+  </div>
+</body>
+</html>
