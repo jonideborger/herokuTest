@@ -9,10 +9,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var db = new JsonDB(new Config("chat", true, false, '/'));
-db.push("/messages", [{message:"test", author: "test"}]);
+db.push("/messages", []);
 db.save();
 
 app.get('/', (req, res) => {
+  res.json({hello: "world"})
+})
+app.get('/messages', (req, res) => {
   var data = db.getData("/messages");
   res.json(data)
 })
@@ -25,6 +28,47 @@ app.post('/message', (req, res) => {
   db.push("/messages", data);
   db.save();
   res.json(inserting)
+})
+
+app.delete('/message/:id', (req, res) => {
+  const data = db.getData("/messages");
+  const filtered = data.filter((e) => e.id !== req.params.id)
+  db.push("/messages", filtered);
+  db.save();
+  res.send("deleted "+req.params.id)
+})
+app.patch('/message/:id', (req, res) => {
+  const data = db.getData("/messages");
+  const mapped = data.map((e) => {
+    if(e.id == req.params.id) {
+      return {
+        ...e,
+        ...req.body
+      }
+    }
+    return e
+  })
+
+  db.push("/messages", mapped);
+  db.save();
+  res.send("updated "+req.params.id)
+})
+
+app.put('/message/:id', (req, res) => {
+  const data = db.getData("/messages");
+  const mapped = data.map((e) => {
+    if(e.id == req.params.id) {
+      return {
+        ...e,
+        ...req.body
+      }
+    }
+    return e
+  })
+
+  db.push("/messages", mapped);
+  db.save();
+  res.send("updated "+req.params.id)
 })
 
 app.listen(PORT, () => {
