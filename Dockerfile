@@ -2,9 +2,9 @@ FROM node:16.11.1
 
 WORKDIR /api
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm i
-COPY . .
+COPY ./ ./
 
 CMD [ "npm", "start" ]
