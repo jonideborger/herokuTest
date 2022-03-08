@@ -1,5 +1,6 @@
+git branch -M main
 build:
   docker:
-    api: Dockerfile
+    web: Dockerfile
 run:
-  api: npm start
+  web: npm start
