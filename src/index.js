@@ -5,6 +5,7 @@ const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
 const bodyParser = require('body-parser');
 const path = require('path')
 const requestIp = require("request-ip");
+const { default: knex } = require('knex');
 
 const pg = require('knex')({
   client: 'pg',
@@ -21,7 +22,11 @@ knex.schema.hasTable('messages').then(function(exists) {
       t.string('message', 1000);
       t.string('ip', 100);
       t.string('hostname', 100);
+      t.timestamp('created_at').defaultTo(knex.fn.now());
+      t.timestamp('updated_at').defaultTo(knex.fn.now());
     });
+  } else {
+    console.log("db exists");
   }
 });
 
@@ -46,6 +51,19 @@ app.get('/messages', (req, res) => {
     }
   }))
 })
+
+app.get('/db/messages', (req, res) => {
+  knex.select("*").table("messages").then((data) => {
+    res.json(data.map((e) => {
+      return {
+        author: e.author,
+        message: e.message,
+        id: e.id,
+        handle: e.handle
+      }
+    }))
+  })
+})
 app.get('/debug', (req, res) => {
   var data = db.getData("/messages");
   res.json(data)
@@ -60,6 +78,14 @@ app.post('/message', (req, res) => {
   db.push("/messages", data);
   db.save();
   res.json(inserting)
+})
+app.post('/db/message', (req, res) => {
+  const clientIp = requestIp.getClientIp(req);
+  const hostname = req.hostname;
+  const inserting = {...req.body, handle: makeid(6)};
+  knex.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
+    res.json(data)
+  })
 })
 
 app.delete('/message/:id', (req, res) => {
