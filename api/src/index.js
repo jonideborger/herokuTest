@@ -46,8 +46,11 @@ app.get('/messages', (req, res) => {
     res.json(data.map((e) => {
       badWords.forEach((w) => {
         if(e.message.indexOf(w) !== -1) {
-          var re = new RegExp(w, 'g');
-          e.message = e.message.replace(re, " [redacted] ");
+          const r = new RegExp(`/\S${w}\S/`)
+          if(e.message.length == w || r.test(e.message)) {
+            var re = new RegExp(w, 'g');
+            e.message = e.message.replace(re, " [redacted] ");
+          }
         }
       })
       return {
