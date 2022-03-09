@@ -44,6 +44,12 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 app.get('/messages', (req, res) => {
   pg.select("*").table("messages").orderBy("id", "DESC").limit(20).then((data) => {
     res.json(data.map((e) => {
+      badWords.forEach((w) => {
+        if(e.message.indexOf(w) !== -1) {
+          var re = new RegExp(w, 'g');
+          e.message = e.message.replace(re, " [redacted] ");
+        }
+      })
       return {
         author: e.author,
         message: e.message,
@@ -64,12 +70,6 @@ app.post('/message', (req, res) => {
   const clientIp = requestIp.getClientIp(req);
   const hostname = req.hostname;
   const inserting = {...req.body, handle: makeid(6)};
-  badWords.forEach((w) => {
-    if(inserting.message.indexOf(w) !== -1) {
-      var re = new RegExp(w, 'g');
-      inserting.message = inserting.message.replace(re, " [redacted] ");
-    }
-  })
   pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
     res.json(data)
   })
