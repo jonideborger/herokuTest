@@ -3,7 +3,8 @@ const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const path = require('path')
 const requestIp = require("request-ip");
-var cors = require('cors')
+var cors = require('cors');
+const { badWords } = require('./wordlist');
 
 
 const pg = require('knex')({
@@ -63,6 +64,11 @@ app.post('/message', (req, res) => {
   const clientIp = requestIp.getClientIp(req);
   const hostname = req.hostname;
   const inserting = {...req.body, handle: makeid(6)};
+  badWords.forEach((w) => {
+    if(inserting.message.indexOf(w) !== -1) {
+      inserting.message = "redacted";
+    }
+  })
   pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
     res.json(data)
   })
