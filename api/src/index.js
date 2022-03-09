@@ -47,7 +47,8 @@ app.get('/messages', (req, res) => {
         author: e.author,
         message: e.message,
         id: e.id,
-        handle: e.handle
+        handle: e.handle,
+        created_at: e.created_at
       }
     }))
   })
