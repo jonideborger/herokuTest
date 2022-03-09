@@ -3,6 +3,8 @@ const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const path = require('path')
 const requestIp = require("request-ip");
+var cors = require('cors')
+
 
 const pg = require('knex')({
   client: 'pg',
@@ -31,6 +33,8 @@ pg.schema.hasTable('messages').then(function(exists) {
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors())
+
 
 
 app.use('/', express.static(path.join(__dirname, 'public')))
