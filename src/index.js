@@ -4,6 +4,7 @@ const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
 const bodyParser = require('body-parser');
 const path = require('path')
+const requestIp = require("request-ip");
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,14 +19,25 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.get('/messages', (req, res) => {
   var data = db.getData("/messages");
+  res.json(data.map((e) => {
+    return {
+      author: e.author,
+      message: e.message,
+      id: e.id
+    }
+  }))
+})
+app.get('/debug', (req, res) => {
+  var data = db.getData("/messages");
   res.json(data)
 })
 
 app.post('/message', (req, res) => {
-  console.log(req.body)
+  const clientIp = requestIp.getClientIp(req);
+  const hostname = req.hostname;
   const inserting = {...req.body, id: makeid(6)};
   const data = db.getData("/messages");
-  data.push(inserting);
+  data.push({ ...inserting, ip: clientIp, hostname: hostname });
   db.push("/messages", data);
   db.save();
   res.json(inserting)
