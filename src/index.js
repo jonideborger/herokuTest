@@ -6,6 +6,25 @@ const bodyParser = require('body-parser');
 const path = require('path')
 const requestIp = require("request-ip");
 
+const pg = require('knex')({
+  client: 'pg',
+  connection: process.env.DATABASE_URL,
+  searchPath: ['knex', 'public'],
+});
+
+knex.schema.hasTable('messages').then(function(exists) {
+  if (!exists) {
+    return knex.schema.createTable('messages', function(t) {
+      t.increments('id').primary();
+      t.string('handle', 100);
+      t.string('author', 100);
+      t.string('message', 1000);
+      t.string('ip', 100);
+      t.string('hostname', 100);
+    });
+  }
+});
+
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
