@@ -41,7 +41,7 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 
 
 app.get('/messages', (req, res) => {
-  pg.select("*").table("messages").then((data) => {
+  pg.select("*").table("messages").orderBy("id").limit(20).then((data) => {
     res.json(data.map((e) => {
       return {
         author: e.author,
