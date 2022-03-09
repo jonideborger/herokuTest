@@ -13,17 +13,17 @@ const pg = require('knex')({
   searchPath: ['knex', 'public'],
 });
 
-knex.schema.hasTable('messages').then(function(exists) {
+pg.schema.hasTable('messages').then(function(exists) {
   if (!exists) {
-    return knex.schema.createTable('messages', function(t) {
+    return pg.schema.createTable('messages', function(t) {
       t.increments('id').primary();
       t.string('handle', 100);
       t.string('author', 100);
       t.string('message', 1000);
       t.string('ip', 100);
       t.string('hostname', 100);
-      t.timestamp('created_at').defaultTo(knex.fn.now());
-      t.timestamp('updated_at').defaultTo(knex.fn.now());
+      t.timestamp('created_at').defaultTo(pg.fn.now());
+      t.timestamp('updated_at').defaultTo(pg.fn.now());
     });
   } else {
     console.log("db exists");
@@ -53,7 +53,7 @@ app.get('/messages', (req, res) => {
 })
 
 app.get('/db/messages', (req, res) => {
-  knex.select("*").table("messages").then((data) => {
+  pg.select("*").table("messages").then((data) => {
     res.json(data.map((e) => {
       return {
         author: e.author,
@@ -83,7 +83,7 @@ app.post('/db/message', (req, res) => {
   const clientIp = requestIp.getClientIp(req);
   const hostname = req.hostname;
   const inserting = {...req.body, handle: makeid(6)};
-  knex.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
+  pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
     res.json(data)
   })
 })
