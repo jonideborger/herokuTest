@@ -66,7 +66,7 @@ app.post('/message', (req, res) => {
   const inserting = {...req.body, handle: makeid(6)};
   badWords.forEach((w) => {
     if(inserting.message.indexOf(w) !== -1) {
-      inserting.message.replace(w, "redacted");
+      inserting.message = inserting.message.replace(w, "redacted");
     }
   })
   pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
