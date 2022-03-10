@@ -89,7 +89,7 @@ app.post('/message', (req, res) => {
 })
 
 app.delete('/message/:id', (req, res) => {
-  if(req.params.id && req.params.id > 1) {
+  if(req.params.id) {
     pg.delete().table("messages").where({handle: req.params.id}).then((data) => {
       res.send("deleted "+req.params.id)
     })
