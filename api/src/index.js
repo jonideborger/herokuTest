@@ -49,7 +49,7 @@ app.get('/messages', (req, res) => {
           const r = new RegExp(`(^|\s)${w}($|\s)`, 'g')
           if(e.message.length == w.length || r.test(e.message)) {
             var re = new RegExp(w, 'g');
-            e.message = e.message.replace(re, " [redacted] ");
+            e.message = e.message.replace(re, "[redacted]");
           }
         }
       })
@@ -73,15 +73,31 @@ app.post('/message', (req, res) => {
   const clientIp = requestIp.getClientIp(req);
   const hostname = req.hostname;
   const inserting = {...req.body, handle: makeid(6)};
-  pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
-    res.json(data)
-  })
+  if(inserting.message.length > 0) {
+    if(inserting.author.length > 0 || inserting.author !== "yourName") {
+      pg.insert({ ...inserting, ip: clientIp, hostname: hostname }).table("messages").returning("*").then((data) => {
+        res.json(data)
+      })
+    }
+    else {
+      res.status(400).send("no author found, or not adjusted")
+    }
+
+  }
+  res.status(400).send("no message body found")
 })
 
 app.delete('/message/:id', (req, res) => {
-  pg.delete().table("messages").where({handle: req.params.id}).then((data) => {
-    res.send("deleted "+req.params.id)
-  })
+  if(req.params.id && req.params.id > 1) {
+    pg.delete().table("messages").where({handle: req.params.id}).then((data) => {
+      res.send("deleted "+req.params.id)
+    })
+    .catch((e) => {
+      res.status(500).send(e)
+    })
+  } else {
+    res.status(400).send("no ID found")
+  }
 })
 
 
