@@ -83,8 +83,9 @@ app.post('/message', (req, res) => {
       res.status(400).send("no author found, or not adjusted")
     }
 
+  } else {
+    res.status(400).send("no message body found")
   }
-  res.status(400).send("no message body found")
 })
 
 app.delete('/message/:id', (req, res) => {
