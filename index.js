@@ -1,14 +1,21 @@
-const express = require('express')
-const PORT = process.env.PORT || 80;
-const bodyParser = require('body-parser');
-const path = require('path')
-const requestIp = require("request-ip");
-var cors = require('cors');
-const {
-    badWords
-} = require('./wordlist');
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import {
+    fileURLToPath
+} from 'url';
 
-const pg = require('knex')({
+import requestIp from 'request-ip';
+import cors from 'cors';
+import badWords from './wordlist.js';
+import knex from 'knex';
+
+const __filename = fileURLToPath(
+    import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = process.env.PORT || 80;
+const pg = knex({
     client: 'mysql',
     connection: {
         host: 'dt5.ehb.be',
@@ -16,7 +23,7 @@ const pg = require('knex')({
         password: '89127634',
         database: 'DEV4070'
     }
-});
+})
 
 pg.schema.hasTable('messages').then(function (exists) {
     if (!exists) {
