@@ -9,6 +9,8 @@ import requestIp from 'request-ip';
 import cors from 'cors';
 import badWords from './wordlist.js';
 import knex from 'knex';
+import KnexMysql from 'knex/lib/dialects/mysql/index.js';
+
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -16,7 +18,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 80;
 const pg = knex({
-    client: 'mysql',
+    client: KnexMysql,
     connection: {
         host: 'dt5.ehb.be',
         user: 'DEV4070',
