@@ -8,11 +8,8 @@ const {
     badWords
 } = require('./wordlist');
 
-const KnexMysql = require('knex/lib/dialects/mysql');
-
-
 const pg = require('knex')({
-    client: KnexMysql,
+    client: 'mysql',
     connection: {
         host: 'dt5.ehb.be',
         user: 'DEV4070',
