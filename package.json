@@ -5,12 +5,14 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "postinstall": "npm rebuild sqlite3 --build-from-source",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "type": "module",
+    "engines": {
+        "node": "20.x"
+    },
     "dependencies": {
         "body-parser": "^1.19.2",
         "cors": "^2.8.5",
