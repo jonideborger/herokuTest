@@ -32,6 +32,7 @@ pg.schema.hasTable('messages').then(function (exists) {
             t.string('message', 1000);
             t.string('ip', 100);
             t.string('hostname', 100);
+            t.integer('likes').defaultTo(0);
             t.timestamp('created_at').defaultTo(pg.fn.now());
             t.timestamp('updated_at').defaultTo(pg.fn.now());
         });
@@ -69,7 +70,8 @@ app.get('/messages', (req, res) => {
                 message: e.message,
                 id: e.id,
                 handle: e.handle,
-                created_at: e.created_at
+                created_at: e.created_at,
+                likes: e.likes || 0
             }
         }))
     })
@@ -116,6 +118,16 @@ app.post('/message', (req, res) => {
         res.status(400).send("no message body found")
     }
 })
+
+app.post('/message/:id/like', (req, res) => {
+    if (req.params.id) {
+        pg('messages').where({ handle: req.params.id }).increment('likes', 1)
+            .then(() => res.send("liked " + req.params.id))
+            .catch(e => res.status(500).send(e.toString()));
+    } else {
+        res.status(400).send("no ID found");
+    }
+});
 
 app.delete('/message/:id', (req, res) => {
     if (req.params.id) {
