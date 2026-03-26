@@ -9,8 +9,6 @@ import requestIp from 'request-ip';
 import cors from 'cors';
 import badWords from './wordlist.js';
 import knex from 'knex';
-import KnexMysql from 'knex/lib/dialects/mysql/index.js';
-
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -18,13 +16,11 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 10000;
 const pg = knex({
-    client: KnexMysql,
+    client: 'sqlite3',
     connection: {
-        host: 'dt5.ehb.be',
-        user: 'DEV4070',
-        password: '89127634',
-        database: 'DEV4070'
-    }
+        filename: "./mydb.sqlite"
+    },
+    useNullAsDefault: true
 })
 
 pg.schema.hasTable('messages').then(function (exists) {
@@ -78,10 +74,22 @@ app.get('/messages', (req, res) => {
         }))
     })
 })
-app.get('/debug', (req, res) => {
+app.get('/admin-cc2/debug', (req, res) => {
     pg.select("*").table("messages").then((data) => {
         res.json(data);
     });
+})
+
+app.get('/admin-cc2/delete', (req, res) => {
+    pg.delete().table("messages").then(() => {
+        res.send("all messages deleted");
+    }).catch(e => {
+        res.status(500).send(e.toString());
+    });
+})
+
+app.get('/ping', (req, res) => {
+    res.send("pong");
 })
 
 app.post('/message', (req, res) => {
